@@ -62,17 +62,30 @@ class SinglyLinkedList(object):
 
             prev = node
 
+from argparse import ArgumentParser
+from skip_list import SinglyLinkedSkipList
+import logging
 
-ll = SinglyLinkedList()
+parser = ArgumentParser()
+logLevel = "DEBUG"
+parser.add_argument('--log')
+args = parser.parse_args()
+logLevel = args.log
+
+if logLevel != None:
+    numLogLevel = getattr(logging, logLevel.upper())
+    logging.basicConfig(level=numLogLevel)
+
+ll = SinglyLinkedSkipList("Test")
 t1 = time.time()
 
-for i in range(1, 10000):
-    ll.insert_end(randint(1000000000, 9999999999))
+for i in range(0, 1000000):
+    ll.head = ll.simple_insert(ll.head, randint(1000000000, 9999999999))
 
 t2 = time.time()
 print("Insert Time =", (t2-t1))
 
 t1 = time.time()
-print(ll)
+print("Node Output: {0}".format(ll))
 
 print("Find time: ", (t1-t2))
