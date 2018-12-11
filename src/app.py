@@ -79,8 +79,10 @@ if logLevel != None:
 ll = SinglyLinkedSkipList("Test")
 t1 = time.time()
 
-for i in range(0, 1000000):
-    ll.head = ll.simple_insert(ll.head, randint(1000000000, 9999999999))
+for i in range(1, 10):
+    #ll.insert(randint(1000000000, 9999999999))
+    ll.insert(randint(1, 10))
+    print("After Insert, LL Is: {0}".format(ll))
 
 t2 = time.time()
 print("Insert Time =", (t2-t1))
