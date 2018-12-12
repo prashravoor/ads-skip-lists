@@ -55,7 +55,7 @@ class SinglyLinkedSkipList(object):
             "Creating a new Singly Linked Skip List of name {0}".format(name))
         self.name = name
         self.heads = []
-        self.levels = 0
+        self.levels = -1
         self.size = 0
 
     def getSimpleTraversal(self, node):
@@ -105,47 +105,43 @@ class SinglyLinkedSkipList(object):
         if self.size == 0:
             logging.debug("Find Top returns {0}".format(None))
             return None
-
         logging.debug("Find Top returns {0}".format(self.heads[self.levels]))
         return self.heads[self.levels]
 
     def find_pred(self, value, stop_at_level=0):
         logging.debug(
-            "Find_Pred for value {0} in Skip List {1}".format(value, self.name))
+            "Find_Pred for value {0} in Skip List {1} at level {2}".format(value, self.name, stop_at_level))
         node = SkipListNode(value)
 
         # Start from the head, and keep moving next
-        prev = None
         current = self.find_top()
         level = self.levels
+        prev = None
 
-        while current != None:
-            if current.next == None and level > stop_at_level:
-                logging.debug(
-                    "Reached end of level {0}, Going down at node {1}".format(level, current))
-                current = current.down
-                level = level - 1
-            elif current.next == None and level == stop_at_level:
-                logging.debug(
-                    "Found place to insert at level {0}, after node {1}".format(level, current))
-                return (current, None)
-            elif current.next < node:
+        while level >= stop_at_level:
+            prev = None
+            logging.debug(
+                "Traversing level {0} in skip list {1}".format(level, self.name))
+            while current and current < node:
+                prev = current
                 current = current.next
-            elif current.down == None:
-                logging.debug(
-                    "Found Predecessor node {0} at level {1}".format(prev, level))
-                return (prev, current)
-            else:
-                logging.debug("Node {0} is greater than value of node {1}, going down from level {2}".format(
-                    current.next, node, level))
+
+            logging.debug("Stopped at {0} on level {1}, prev is {2}".format(
+                current, level, prev))
+            if current and current < node:
+                logging.debug("Moving down from node {0} at level {1} to node {2}".format(current, level, current.down))
                 current = current.down
-                level = level - 1
+            elif prev:
+                logging.debug("Prev: Moving down from node {0} at level {1} to node {2}".format(prev, level, prev.down))
+                current = prev.down
+            else:
+                # Reset to head of next level
+                current = self.heads[level - 1]
+            level -= 1
 
-            prev = current
-
-        logging.info(
-            "Value {0} was not found in Skip List {1}".format(value, self.name))
-        return (None, None)
+        logging.debug(
+            "Returning {0} as predecessor for value {1}".format(prev, value))
+        return prev
 
     def simple_insert(self, startNode, value):
         logging.debug("Simple Insert of value {0} in Skip List {1} starting from node {2}".format(
@@ -154,7 +150,7 @@ class SinglyLinkedSkipList(object):
 
         current = startNode
         prev = None
-        while current != None and current < node:
+        while current and current < node:
             prev = current
             current = current.next
 
@@ -169,7 +165,6 @@ class SinglyLinkedSkipList(object):
             node.next = prev.next
             prev.next = node
 
-        self.size += 1
         return startNode
 
     def insert(self, value):
@@ -182,6 +177,8 @@ class SinglyLinkedSkipList(object):
         if current == None:
             # First node insert
             self.heads.append(self.simple_insert(current, value))
+            self.size = 1
+            self.levels = 0
             return
 
         # Find number of levels
@@ -191,31 +188,37 @@ class SinglyLinkedSkipList(object):
             num_of_levels = random.randint(0, floor(log2(self.size)))
 
         logging.info("Node {0} will be in {1} levels".format(
-            value, num_of_levels + 1))
+            value, num_of_levels))
 
-        top = None
-        at_level = num_of_levels
-        while at_level >= 0:
+        level = 0
+        prev_node = None
+        while level <= num_of_levels:
+            prev = self.find_pred(value, level)
             node = SkipListNode(value)
-            if self.levels < at_level:
-                # Insert node at the head of the missing level
-                logging.info("Adding missing level {0}".format(self.levels))
-                self.heads.append(node)
-                self.levels += 1
+            if not prev:
+                logging.debug(
+                    "Node {0} is the least value in the list at level {1}".format(value, level))
+                # Insert at head of level
+                if len(self.heads) <= level:
+                    logging.debug("Adding a head node at level {0}")
+                    self.heads.append(None)
+                    self.levels += 1
+
+                node.next = self.heads[level]
+                self.heads[level] = node
+
+                logging.debug("Current Heads: {0}, Levels: {1}".format(self.heads, self.levels))
+
             else:
-                (prev, next) = self.find_pred(value, at_level)
-                logging.debug("Inserting node {0} in between elements {1} and {2} at level {3}".format(
-                    value, prev, next, at_level))
-                node.next = next
-                if prev:
-                    prev.next = node
-                else:
-                    self.heads[at_level] = node
+                logging.debug(
+                    "Node {0} will be inserted after {1} at level {2}".format(value, prev, level))
+                node.next = prev.next
+                prev.next = node
 
-            self.size += 1
+            node.down = prev_node
+            if prev_node:
+                prev_node.up = node
+            prev_node = node
+            level += 1
 
-            node.up = top
-            if node.up:
-                node.up.bottom = node
-            top = node
-            at_level -= 1
+        self.size += 1

@@ -77,17 +77,14 @@ if logLevel != None:
     logging.basicConfig(level=numLogLevel)
 
 ll = SinglyLinkedSkipList("Test")
-t1 = time.time()
 
-for i in range(1, 10):
+t1 = time.time()
+for i in range(1, 1000):
     #ll.insert(randint(1000000000, 9999999999))
-    ll.insert(randint(1, 10))
-    print("After Insert, LL Is: {0}".format(ll))
-
+    ll.insert(randint(-1000, 1000))
+    #print("After Insert, LL Is: {0}".format(ll))
 t2 = time.time()
-print("Insert Time =", (t2-t1))
+print("The Linked List is now:")
+print(ll)
 
-t1 = time.time()
-print("Node Output: {0}".format(ll))
-
-print("Find time: ", (t1-t2))
+print("Insert Time For Skip List =", (t2-t1))
