@@ -98,28 +98,51 @@ class Application(pygubu.TkApplication):
         self.builder = builder = pygubu.Builder()
         #master.withdraw()
         builder.add_from_file('../GUI.ui')
-        self.mainwindow = builder.get_object('mainwindow', master)
+        self.toplevel = builder.get_object('toplevel', master)
         # Connect Delete event to a toplevel window
-        master.protocol("WM_DELETE_WINDOW", self.on_close_window)
+        master.withdraw()
+        self.toplevel.master.protocol("WM_DELETE_WINDOW", self.on_close_window)
         builder.connect_callbacks(self)
         self.lists = {}
         self.trace_mode = False
+        self.status_text = builder.get_object("statustext")
 
     def quit(self, event=None):
-        self.mainwindow.quit()
+        self.toplevel.quit()
+
+    def run(self):
+        self.toplevel.mainloop()
+
+    def appendMessage(self, message):
+        self.status_text.configure(state="normal")
+        self.status_text.insert(tk.END, "{}\n".format(message))
+        self.status_text.see(tk.END)
+        self.status_text.configure(state="disabled")
+
+    def clearAll(self):
+        self.status_text.configure(state="normal")
+        self.status_text.delete("1.0", tk.END)
+        self.status_text.configure(state="disabled")
 
     def on_close_window(self, event=None):
         print('On close window')
         # Call destroy on toplevel to finish program
-        self.mainwindow.master.destroy()
+        self.toplevel.master.destroy()
 
     def CreateList(self):
-        result = tk.simpledialog.askstring('List Name', 'Enter the Name', parent=None)
-        self.CreateListNamed(result)
+        result = tk.simpledialog.askstring('Skip List Name', 'Enter Skip List Name', parent=None)
+        if not result:
+            self.appendMessage("No List was Created")
+            return None
+        try:
+            self.CreateListNamed(result)
+            self.appendMessage("Successfully created skip list with name {}".format(result))
+        except ValueError:
+            self.appendMessage("Failed to create skip list {}, it already exists!".format(result))
 
     def CreateListNamed(self, name, mode="single"):
         try:
-            self.GetList(name)
+            self.GetListNamed(name)
             logging.error(
                 "There is already a skip list with name: {0}".format(name))
         except ValueError:
@@ -128,13 +151,24 @@ class Application(pygubu.TkApplication):
             return
         raise ValueError
 
-    def GetList(self, name):
+    def GetList(self):
+        name = tk.simpledialog.askstring("Get List", "List Name")
+        try:
+            self.appendMessage(self.GetListNamed(name))
+        except ValueError:
+            self.appendMessage("List {} does not exist".format(name))
+
+
+    def GetListNamed(self, name):
         logging.info("Getting list {0}".format(name))
+        if not name in self.lists:
+            raise ValueError
+
         return self.lists[name]
 
-    def ShowList(self, name):
+    def ShowListNamed(self, name):
         logging.info("Showing list {0}".format(name))
-        return "{0}".format(self.GetList(name))
+        return "{0}".format(self.GetListNamed(name))
 
     def DeleteList(self, name):
         logging.info("Deleting list {0}".format(name))
@@ -170,4 +204,4 @@ class Application(pygubu.TkApplication):
 if __name__ == '__main__':
     root = tk.Tk()
     app = Application(root)
-    root.mainloop()
+    app.run()
