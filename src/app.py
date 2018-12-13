@@ -401,7 +401,7 @@ class Application(pygubu.TkApplication):
                 result, self.selected_list.name))
         else:
             self.appendMessage("Item {} was found in the skip list {}, Previous Node: {}, Next Node: {}".format(
-                result, self.selected_list.name, node.prev, node.next, node.up, node.down))
+                result, self.selected_list.name, node.prev, node.next))
         self.appendMessage("Find Node Completed in {} seconds".format((t2 - t1)))
 
     def DeleteFromFile(self):
