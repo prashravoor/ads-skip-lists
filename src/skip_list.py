@@ -263,3 +263,54 @@ class SinglyLinkedSkipList(object):
             level += 1
 
         self.size += 1
+
+    def find(self, value):
+        logger.debug("Finding value {} in Skip List {}".format(value, self.name))
+        node = SkipListNode(value)
+        pred = self.find_pred(value)
+        if not pred:
+            # Check first node at level 0
+            if len(self.heads) > 0 and self.heads[0] == node:
+                return self.heads[0]
+        elif pred.next == node:
+            return pred.next
+
+        return None
+
+    def delete(self, value):
+        logger.debug("Deleting value {} in Skip List {}".format(value, self.name))
+        node = SkipListNode(value)
+
+        level = self.levels
+        deleted = False
+        while level >= 0:
+            pred = self.find_pred(value, level)
+            if not pred:
+                # Check for head
+                if self.heads[level] == node:
+                    logger.debug("Found the node {} at the head of level {}".format(value, level))
+                    self.heads[level] = self.heads[level].next
+                    deleted = True
+                else:
+                    logger.debug("Node {} was not found at level {}".format(value, level))
+            else:
+                if pred.next == node:
+                    logger.debug("Found node {} at level {}".format(value, level))
+                    pred.next = pred.next.next
+                    deleted = True
+                else:
+                    logger.debug("Node {} was not found at level {}".format(value, level))
+            level -= 1
+
+        # Adjust number of levels
+        while not self.find_top():
+            logging.debug("Removing head")
+            self.heads.pop()
+            self.levels -= 1
+
+        if deleted:
+            self.size -= 1
+            return True
+        return False
+
+

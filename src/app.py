@@ -393,7 +393,7 @@ class Application(pygubu.TkApplication):
                 "An Exception has occurred while creating the data file: {}".format(ex))
 
         dialog = self.builder.get_object('createdatadiag')
-        dialog.destroy()
+        dialog.close()
 
 
 if __name__ == '__main__':
