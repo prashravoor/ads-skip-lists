@@ -89,7 +89,7 @@
           <object class="ttk.Entry" id="findnodesinlevel">
             <property name="justify">center</property>
             <property name="textvariable">string:nodes_in_level</property>
-            <property name="width">5</property>
+            <property name="width">10</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -103,7 +103,7 @@
             <property name="padding">0</property>
             <property name="relief">groove</property>
             <property name="text" translatable="yes">0</property>
-            <property name="width">3</property>
+            <property name="width">10</property>
             <layout>
               <property name="column">2</property>
               <property name="propagate">True</property>
@@ -495,7 +495,7 @@
       </object>
     </child>
     <child>
-      <object class="ttk.Entry" id="listname">
+      <object class="ttk.Entry" id="listname_1">
         <property name="textvariable">string:list_name</property>
         <property name="width">20</property>
         <layout>

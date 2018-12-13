@@ -352,6 +352,9 @@ class DoublyLinkedSkipList(SinglyLinkedSkipList):
             while current and current.next and current < node:
                 current = current.next
 
+            while current and current.prev and current.prev > node:
+                current = current.prev
+
             if current:
                 prev = current.prev
 
@@ -362,19 +365,11 @@ class DoublyLinkedSkipList(SinglyLinkedSkipList):
                     current, level, current.down))
                 prev = current
                 current = current.down
-            elif current and current > node:
-                logger.debug("Moving back from node {} at level {}".format(current, level))
-                while current.prev and current > node:
-                    current = current.prev
-                logger.debug("Stopped at node {} at level {}".format(current, level))
-                if current > node:
-                    prev = current.prev
-                else:
-                    prev = current
-                logger.debug("Moving down from current node {} to {}".format(current, current.down))
-                current = current.down
-            elif current:
-                current = current.down
+            elif prev:
+                logger.debug("Prev: Moving down from node {} at level {} to node {}".format(prev, level, prev.down))
+                current = prev.down
+            else:
+                current = self.heads[level - 1]
 
             level -= 1
 

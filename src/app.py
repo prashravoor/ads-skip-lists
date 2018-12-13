@@ -205,9 +205,9 @@ class Application(pygubu.TkApplication):
             return
         result = int(result)
 
-        t1 = time.time()
+        t1 = time.clock()
         inserted = self.selected_list.insert(result)
-        t2 = time.time()
+        t2 = time.clock()
         self.setLabels()
         if self.trace_mode:
             if inserted:
@@ -295,7 +295,7 @@ class Application(pygubu.TkApplication):
         logger.info("Found {0} keys in file {1}".format(len(keys), filename))
         logger.debug("Keys: {}".format(keys))
 
-        t1 = time.time()
+        t1 = time.clock()
         for key in keys:
             try:
                 key = int(key)
@@ -310,7 +310,7 @@ class Application(pygubu.TkApplication):
                 logger.error(
                     "Found invalid key {} in file, skipping it".format(key))
         self.setLabels()
-        t2 = time.time()
+        t2 = time.clock()
         self.appendMessage(
             "Total time to insert {} keys: {} seconds".format(len(keys), (t2 - t1)))
 
@@ -340,8 +340,8 @@ class Application(pygubu.TkApplication):
             keys = []
             i = 0
             while i < numKeys:
-                #keys.append(randint(1000000000, 9999999999))
-                keys.append(randint(10, 99))
+                keys.append(randint(1000000000, 9999999999))
+                #keys.append(randint(10, 99))
                 i += 1
 
             writer.writerow(keys)
@@ -367,9 +367,9 @@ class Application(pygubu.TkApplication):
             return
         result = int(result)
 
-        t1 = time.time()
+        t1 = time.clock()
         deleted = self.selected_list.delete(result)
-        t2 = time.time()
+        t2 = time.clock()
         if deleted:
             self.appendMessage("Deleted item {} from Skip List {} in {} seconds".format(
                 result, self.selected_list.name, (t2 - t1)))
@@ -393,9 +393,9 @@ class Application(pygubu.TkApplication):
             return
         result = int(result)
 
-        t1 = time.time()
+        t1 = time.clock()
         node = self.selected_list.find(result)
-        t2 = time.time()
+        t2 = time.clock()
         if not node:
             self.appendMessage("Item {} was not found Skip List {}".format(
                 result, self.selected_list.name))
@@ -434,7 +434,7 @@ class Application(pygubu.TkApplication):
         logger.info("Found {0} keys in file {1}".format(len(keys), filename))
         logger.debug("Keys: {}".format(keys))
 
-        t1 = time.time()
+        t1 = time.clock()
         for key in keys:
             try:
                 key = int(key)
@@ -449,7 +449,7 @@ class Application(pygubu.TkApplication):
                 logger.error(
                     "Found invalid key {} in file, skipping it".format(key))
         self.setLabels()
-        t2 = time.time()
+        t2 = time.clock()
         self.appendMessage(
             "Total time to delete {} keys: {} seconds".format(len(keys), (t2 - t1)))
 
