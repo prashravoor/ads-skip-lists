@@ -206,11 +206,14 @@ class Application(pygubu.TkApplication):
         result = int(result)
 
         t1 = time.time()
-        self.selected_list.insert(result)
+        inserted = self.selected_list.insert(result)
         t2 = time.time()
         self.setLabels()
         if self.trace_mode:
-            self.appendMessage("{}".format(self.selected_list))
+            if inserted:
+                self.appendMessage("{}".format(self.selected_list))
+            else:
+                self.appendMessage("Skipping duplicate item {}".format(result))
         self.appendMessage("Item {} inserted in {} seconds".format(result, (t2 - t1)))
 
     def ShowListDiag(self):
@@ -296,10 +299,13 @@ class Application(pygubu.TkApplication):
         for key in keys:
             try:
                 key = int(key)
-                self.selected_list.insert(int(key))
+                inserted = self.selected_list.insert(int(key))
                 if self.trace_mode:
-                    self.appendMessage(
-                        "Inserted Key {}, the list is now {}".format(key, self.selected_list))
+                    if inserted:
+                        self.appendMessage(
+                            "Inserted Key {}, the list is now {}".format(key, self.selected_list))
+                    else:
+                        self.appendMessage("Skipping duplicate node {}".format(key))
             except:
                 logger.error(
                     "Found invalid key {} in file, skipping it".format(key))
@@ -362,7 +368,7 @@ class Application(pygubu.TkApplication):
         result = int(result)
 
         t1 = time.time()
-        deleted = self.selected_list.delete(result):
+        deleted = self.selected_list.delete(result)
         t2 = time.time()
         if deleted:
             self.appendMessage("Deleted item {} from Skip List {} in {} seconds".format(
