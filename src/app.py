@@ -1,5 +1,7 @@
 import pygubu
 import tkinter as tk
+from tkinter import filedialog
+
 import csv
 import logging
 from skip_list import SinglyLinkedSkipList
@@ -161,10 +163,10 @@ class Application(pygubu.TkApplication):
 
     def CreateListNamed(self, name, mode="single"):
         try:
-            self.GetListNamed(name)
+            self.lists[name]
             logger.error(
                 "There is already a skip list with name: {0}".format(name))
-        except ValueError:
+        except KeyError:
             logger.info("Created new Skip List")
             self.lists[name] = SinglyLinkedSkipList(name)
             return
@@ -260,59 +262,138 @@ class Application(pygubu.TkApplication):
         if not result:
             self.appendMessage("No item was added")
             return
+        result = int(result)
 
         self.selected_list.insert(result)
         self.setLabels()
         if self.trace_mode:
             self.appendMessage("{}".format(self.selected_list))
 
-    def GetList(self):
-        if not self.selected_list:
-            name = tk.simpledialog.askstring("Get List", "List Name")
-        else:
-            name = self.selected_list.name
+    def ShowListDiag(self):
+        diag = self.builder.get_object('showlist')
+        name = self.builder.get_variable('list_name').get()
+        from_val = self.builder.get_variable('from_node_val').get()
         try:
-            self.appendMessage(self.GetListNamed(name))
-        except ValueError:
+            from_val = int(from_val)
+        except:
+            self.appendMessage("Invalid value specified for from index")
+            diag.close()
+            return
+
+        to_val = self.builder.get_variable('to_node_val').get()
+        if "END" == to_val:
+            to_val = 10000000
+        try:
+            to_val = int(to_val)
+        except:
+            self.appendMessage("Invalid value specified for to index")
+            diag.close()
+            return
+
+        logger.debug("Displaying list {} from index {} to index {}".format(
+            name, from_val, to_val))
+        try:
+            list = self.lists[name]
+            self.appendMessage(list.getTraversal(from_val, to_val))
+        except KeyError:
             self.appendMessage("List {} does not exist".format(name))
+        diag.close()
 
-    def GetListNamed(self, name):
-        logger.info("Getting list {0}".format(name))
-        if not name in self.lists:
-            raise ValueError
+    def GetList(self):
+        diag = self.builder.get_object('showlist')
+        self.builder.get_object('showlistbtn').configure(
+            command=self.ShowListDiag)
+        diag.run()
 
-        return self.lists[name]
+    def CreateData(self):
+        dialog = self.builder.get_object('createdatadiag')
+        self.builder.get_object('ok').configure(command=self.CreateDataFile)
+        dialog.run()
 
-    def ShowListNamed(self, name):
-        logger.info("Showing list {0}".format(name))
-        return "{0}".format(self.GetListNamed(name))
+    def ReadFromCsvFile(self):
+        if not self.selected_list:
+            self.appendMessage("You need to select a Skip List first")
+            return
+        filename = filedialog.askopenfilename(
+            initialdir=".", title="Select File to read from")
+        if not filename:
+            self.appendMessage("No values read")
+            return
+        elif ".csv" not in filename:
+            self.appendMessage("Only CSV files are allowed")
+            return
 
-    def CreateData(self, filename, numKeys):
-        f = open(filename, "w", newline="")
-        writer = csv.writer(f)
-
-        logger.info("Creating {0} keys in file {1}".format(numKeys, filename))
-        keys = []
-        for i in range(1, numKeys):
-            keys.append(randint(1000000000, 9999999999))
-
-        writer.writerows(keys)
-
-    def ReadFromCsvFile(self, filename):
         f = open(filename, "r")
-        reader = csv.reader(f)
+        reader = csv.reader(f, delimiter=",")
         keys = []
 
         logger.info("Reading all integers from file {0}".format(filename))
         for key in reader:
             keys.append(key)
 
+        if not keys or len(keys) <= 0:
+            self.appendMessage("No Keys found in the file")
+            return
+
+        keys = keys[0]
+
         logger.info("Found {0} keys in file {1}".format(len(keys), filename))
-        return keys
+        logger.debug("Keys: {}".format(keys))
+
+        t1 = time.time()
+        for key in keys:
+            try:
+                key = int(key)
+                self.selected_list.insert(int(key))
+                if self.trace_mode:
+                    self.appendMessage(
+                        "Inserted Key {}, the list is now {}".format(key, self.selected_list))
+            except:
+                logger.error(
+                    "Found invalid key {} in file, skipping it".format(key))
+        self.setLabels()
+        t2 = time.time()
+        self.appendMessage(
+            "Total time to insert {} keys: {} seconds".format(len(keys), (t2 - t1)))
 
     def SetTrace(self):
         self.trace_mode = self.builder.get_variable('set_trace').get()
         print("Set Trace Mode to {}".format(self.trace_mode))
+
+    def CreateDataFile(self):
+        logger.info("Creating Data File")
+        filename = self.builder.get_variable('create_data_filename').get()
+        numKeys = self.builder.get_variable('num_keys_val').get()
+
+        if not filename:
+            self.appendMessage("Invalid Filename specified")
+            return
+
+        if numKeys < 0:
+            self.appendMessage("Invalid integer {}".format(numKeys))
+            return
+
+        try:
+            f = open(filename, "w", newline="")
+            writer = csv.writer(f, delimiter=",")
+
+            logger.info("Creating {0} keys in file {1}".format(
+                numKeys, filename))
+            keys = []
+            i = 0
+            while i < numKeys:
+                keys.append(randint(1000000000, 9999999999))
+                i += 1
+
+            writer.writerow(keys)
+            self.appendMessage(
+                "Wrote {} keys to file {}".format(numKeys, filename))
+        except Exception as ex:
+            self.appendMessage(
+                "An Exception has occurred while creating the data file: {}".format(ex))
+
+        dialog = self.builder.get_object('createdatadiag')
+        dialog.destroy()
 
 
 if __name__ == '__main__':

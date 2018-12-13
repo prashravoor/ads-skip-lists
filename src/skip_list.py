@@ -123,6 +123,24 @@ class SinglyLinkedSkipList(object):
 
         return self.getSimpleTraversal(self.heads[level])
 
+    def getTraversal(self, from_val, to_val):
+        if self.size < from_val:
+            return "None"
+
+        logger.debug("Traversal from index {} to index {} in list {}".format(from_val, to_val, self.name))
+        i = 0
+        str = "[ "
+        current = self.heads[0]
+        while i < from_val:
+            i += 1
+            current = current.next
+
+        while current and i < self.size and i < to_val:
+            str += "{} ".format(current)
+            current = current.next
+            i += 1
+        str += "]"
+        return str
 
     def find_top(self):
         if self.size == 0:

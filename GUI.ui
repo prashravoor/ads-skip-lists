@@ -292,6 +292,7 @@
         </child>
         <child>
           <object class="ttk.Button" id="insertfile">
+            <property name="command">ReadFromCsvFile</property>
             <property name="text" translatable="yes">Insert From File</property>
             <property name="width">15</property>
             <layout>
@@ -407,6 +408,153 @@
             </layout>
           </object>
         </child>
+      </object>
+    </child>
+  </object>
+  <object class="pygubu.builder.widgets.dialog" id="createdatadiag">
+    <property name="height">100</property>
+    <property name="modal">false</property>
+    <property name="width">200</property>
+    <child>
+      <object class="ttk.Label" id="createdatafilenamelabel">
+        <property name="justify">left</property>
+        <property name="text" translatable="yes">Enter Target Filename</property>
+        <property name="width">30</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="createdatafilename">
+        <property name="justify">left</property>
+        <property name="text" translatable="yes">data.csv</property>
+        <property name="textvariable">string:create_data_filename</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="numkeyslabel">
+        <property name="justify">left</property>
+        <property name="text" translatable="yes">Enter the number of keys</property>
+        <property name="width">30</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="numkeysval">
+        <property name="justify">left</property>
+        <property name="text" translatable="yes">100</property>
+        <property name="textvariable">int:num_keys_val</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="ok">
+        <property name="text" translatable="yes">Create</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+  <object class="pygubu.builder.widgets.dialog" id="showlist">
+    <property name="height">100</property>
+    <property name="modal">false</property>
+    <property name="width">200</property>
+    <child>
+      <object class="ttk.Label" id="listname">
+        <property name="justify">left</property>
+        <property name="text" translatable="yes">List Name</property>
+        <property name="width">20</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="listname">
+        <property name="textvariable">string:list_name</property>
+        <property name="width">20</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="from">
+        <property name="justify">left</property>
+        <property name="text" translatable="yes">From Node Index</property>
+        <property name="width">20</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="fromnodeval">
+        <property name="text" translatable="yes">0</property>
+        <property name="textvariable">string:from_node_val</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="toval">
+        <property name="justify">left</property>
+        <property name="text" translatable="yes">To Node Index</property>
+        <property name="width">20</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="tonodeval">
+        <property name="text" translatable="yes">END</property>
+        <property name="textvariable">string:to_node_val</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="showlistbtn">
+        <property name="text" translatable="yes">Show</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">3</property>
+        </layout>
       </object>
     </child>
   </object>
