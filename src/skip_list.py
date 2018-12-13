@@ -58,6 +58,7 @@ class SinglyLinkedSkipList(object):
         self.heads = []
         self.levels = -1
         self.size = 0
+        self.type = "Singly Linked"
 
     def getSimpleTraversal(self, node):
         logger.debug("Starting simple traversal from node {0}".format(node))
@@ -124,10 +125,11 @@ class SinglyLinkedSkipList(object):
         return self.getSimpleTraversal(self.heads[level])
 
     def getTraversal(self, from_val, to_val):
-        if self.size < from_val:
+        if self.size == 0 or self.size < from_val:
             return "None"
 
-        logger.debug("Traversal from index {} to index {} in list {}".format(from_val, to_val, self.name))
+        logger.debug("Traversal from index {} to index {} in list {}".format(
+            from_val, to_val, self.name))
         i = 0
         str = "[ "
         current = self.heads[0]
@@ -170,10 +172,12 @@ class SinglyLinkedSkipList(object):
             logger.debug("Stopped at {0} on level {1}, prev is {2}".format(
                 current, level, prev))
             if current and current < node:
-                logger.debug("Moving down from node {0} at level {1} to node {2}".format(current, level, current.down))
+                logger.debug("Moving down from node {0} at level {1} to node {2}".format(
+                    current, level, current.down))
                 current = current.down
             elif prev:
-                logger.debug("Prev: Moving down from node {0} at level {1} to node {2}".format(prev, level, prev.down))
+                logger.debug("Prev: Moving down from node {0} at level {1} to node {2}".format(
+                    prev, level, prev.down))
                 current = prev.down
             else:
                 # Reset to head of next level
@@ -222,6 +226,10 @@ class SinglyLinkedSkipList(object):
             self.levels = 0
             return
 
+        if self.find(value):
+            logger.info("Found {} in the list, skipping this value as duplicate".format(value))
+            return
+
         # Find number of levels
         if self.size < 2:
             num_of_levels = 0
@@ -248,7 +256,8 @@ class SinglyLinkedSkipList(object):
                 node.next = self.heads[level]
                 self.heads[level] = node
 
-                logger.debug("Current Heads: {0}, Levels: {1}".format(self.heads, self.levels))
+                logger.debug("Current Heads: {0}, Levels: {1}".format(
+                    self.heads, self.levels))
 
             else:
                 logger.debug(
@@ -265,7 +274,8 @@ class SinglyLinkedSkipList(object):
         self.size += 1
 
     def find(self, value):
-        logger.debug("Finding value {} in Skip List {}".format(value, self.name))
+        logger.debug(
+            "Finding value {} in Skip List {}".format(value, self.name))
         node = SkipListNode(value)
         pred = self.find_pred(value)
         if not pred:
@@ -278,7 +288,8 @@ class SinglyLinkedSkipList(object):
         return None
 
     def delete(self, value):
-        logger.debug("Deleting value {} in Skip List {}".format(value, self.name))
+        logger.debug(
+            "Deleting value {} in Skip List {}".format(value, self.name))
         node = SkipListNode(value)
 
         level = self.levels
@@ -288,18 +299,22 @@ class SinglyLinkedSkipList(object):
             if not pred:
                 # Check for head
                 if self.heads[level] == node:
-                    logger.debug("Found the node {} at the head of level {}".format(value, level))
+                    logger.debug(
+                        "Found the node {} at the head of level {}".format(value, level))
                     self.heads[level] = self.heads[level].next
                     deleted = True
                 else:
-                    logger.debug("Node {} was not found at level {}".format(value, level))
+                    logger.debug(
+                        "Node {} was not found at level {}".format(value, level))
             else:
                 if pred.next == node:
-                    logger.debug("Found node {} at level {}".format(value, level))
+                    logger.debug(
+                        "Found node {} at level {}".format(value, level))
                     pred.next = pred.next.next
                     deleted = True
                 else:
-                    logger.debug("Node {} was not found at level {}".format(value, level))
+                    logger.debug(
+                        "Node {} was not found at level {}".format(value, level))
             level -= 1
 
         # Adjust number of levels
@@ -314,3 +329,8 @@ class SinglyLinkedSkipList(object):
         return False
 
 
+class DoublyLinkedSkipList(SinglyLinkedSkipList):
+    def __init__(self, name):
+        super().__setattr__('name', name)
+        logger.debug("Created a doubly linked skip list of name: " + name)
+        self.type = "Doubly Linked"

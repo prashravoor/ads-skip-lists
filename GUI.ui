@@ -43,8 +43,7 @@
         </child>
         <child>
           <object class="ttk.Label" id="numnodes">
-            <property name="justify">left</property>
-            <property name="width">10</property>
+            <property name="justify">right</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -66,8 +65,7 @@
         </child>
         <child>
           <object class="ttk.Label" id="numlevels">
-            <property name="justify">left</property>
-            <property name="width">10</property>
+            <property name="justify">right</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -89,6 +87,7 @@
         </child>
         <child>
           <object class="ttk.Entry" id="findnodesinlevel">
+            <property name="justify">center</property>
             <property name="textvariable">string:nodes_in_level</property>
             <property name="width">5</property>
             <layout>
@@ -130,6 +129,7 @@
         </child>
         <child>
           <object class="ttk.Label" id="selectedskiplist">
+            <property name="width">25</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -231,10 +231,10 @@
           <property name="row">0</property>
         </layout>
         <child>
-          <object class="ttk.Button" id="create">
-            <property name="command">CreateList</property>
-            <property name="text" translatable="yes">Create Skip List</property>
-            <property name="width">15</property>
+          <object class="ttk.Button" id="createsll">
+            <property name="command">CreateSlList</property>
+            <property name="text" translatable="yes">Create SL Skip List</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">0</property>
               <property name="propagate">True</property>
@@ -243,10 +243,10 @@
           </object>
         </child>
         <child>
-          <object class="ttk.Button" id="listdelete">
-            <property name="command">DeleteList</property>
-            <property name="text" translatable="yes">Delete List</property>
-            <property name="width">15</property>
+          <object class="ttk.Button" id="createdll">
+            <property name="command">CreateDlList</property>
+            <property name="text" translatable="yes">Create DL Skip List</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -258,7 +258,7 @@
           <object class="ttk.Button" id="list">
             <property name="command">ListNames</property>
             <property name="text" translatable="yes">List Names</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">0</property>
               <property name="propagate">True</property>
@@ -270,7 +270,7 @@
           <object class="ttk.Button" id="selectlist">
             <property name="command">SelectSkipList</property>
             <property name="text" translatable="yes">Select Skip List</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -282,7 +282,7 @@
           <object class="ttk.Button" id="createdata">
             <property name="command">CreateData</property>
             <property name="text" translatable="yes">Create Data</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">0</property>
               <property name="propagate">True</property>
@@ -294,7 +294,7 @@
           <object class="ttk.Button" id="insertfile">
             <property name="command">ReadFromCsvFile</property>
             <property name="text" translatable="yes">Insert From File</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -304,8 +304,9 @@
         </child>
         <child>
           <object class="ttk.Button" id="deletefile">
+            <property name="command">DeleteFromFile</property>
             <property name="text" translatable="yes">Delete From File</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">0</property>
               <property name="propagate">True</property>
@@ -317,7 +318,7 @@
           <object class="ttk.Button" id="insert">
             <property name="command">InsertItem</property>
             <property name="text" translatable="yes">Insert Node</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -327,8 +328,9 @@
         </child>
         <child>
           <object class="ttk.Button" id="delete">
+            <property name="command">DeleteNode</property>
             <property name="text" translatable="yes">Delete Node</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">0</property>
               <property name="propagate">True</property>
@@ -338,8 +340,9 @@
         </child>
         <child>
           <object class="ttk.Button" id="find">
+            <property name="command">FindNode</property>
             <property name="text" translatable="yes">Find Node</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -351,7 +354,7 @@
           <object class="ttk.Button" id="show">
             <property name="command">GetList</property>
             <property name="text" translatable="yes">Show List</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">0</property>
               <property name="propagate">True</property>
@@ -360,9 +363,10 @@
           </object>
         </child>
         <child>
-          <object class="ttk.Button" id="stats">
-            <property name="text" translatable="yes">Show Stats</property>
-            <property name="width">15</property>
+          <object class="ttk.Button" id="listdelete">
+            <property name="command">DeleteList</property>
+            <property name="text" translatable="yes">Delete List</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">1</property>
               <property name="propagate">True</property>
@@ -374,9 +378,21 @@
           <object class="ttk.Button" id="clear">
             <property name="command">clearAll</property>
             <property name="text" translatable="yes">Clear All</property>
-            <property name="width">15</property>
+            <property name="width">20</property>
             <layout>
               <property name="column">0</property>
+              <property name="propagate">True</property>
+              <property name="row">6</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="exit">
+            <property name="command">quit</property>
+            <property name="text" translatable="yes">Exit</property>
+            <property name="width">20</property>
+            <layout>
+              <property name="column">1</property>
               <property name="propagate">True</property>
               <property name="row">6</property>
             </layout>
@@ -393,18 +409,6 @@
               <property name="column">0</property>
               <property name="propagate">True</property>
               <property name="row">7</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="ttk.Button" id="exit">
-            <property name="command">quit</property>
-            <property name="text" translatable="yes">Exit</property>
-            <property name="width">15</property>
-            <layout>
-              <property name="column">1</property>
-              <property name="propagate">True</property>
-              <property name="row">6</property>
             </layout>
           </object>
         </child>
@@ -544,6 +548,21 @@
           <property name="column">1</property>
           <property name="propagate">True</property>
           <property name="row">2</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Checkbutton" id="showalllevels">
+        <property name="offvalue">0</property>
+        <property name="onvalue">1</property>
+        <property name="text" translatable="yes">Show All Levels</property>
+        <property name="variable">boolean:show_all_levels</property>
+        <property name="width">20</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">3</property>
+          <property name="sticky">w</property>
         </layout>
       </object>
     </child>

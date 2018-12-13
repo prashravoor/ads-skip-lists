@@ -1,91 +1,15 @@
 import pygubu
 import tkinter as tk
 from tkinter import filedialog
-
 import csv
 import logging
-from skip_list import SinglyLinkedSkipList
+from skip_list import SinglyLinkedSkipList, DoublyLinkedSkipList
 from argparse import ArgumentParser
 import time
 from random import randint
 import tkinter.simpledialog
 
 logger = logging.getLogger()
-
-
-class Node(object):
-    def __init__(self, value=None):
-        self.val = value
-        self.next = None
-        self.prev = None
-
-    def __str__(self):
-        return "{0}".format(self.val)
-
-
-class SinglyLinkedList(object):
-    def __init__(self):
-        self.head = None
-        self.current = None
-        self.tail = None
-
-    def __str__(self):
-        str = "["
-        for node in self:
-            str = "{0} {1}".format(str, node)
-
-        str += " ]"
-        return str
-
-    def __iter__(self):
-        self.current = self.head
-        return self
-
-    def __next__(self):
-        if self.current is None:
-            raise StopIteration
-
-        cur = self.current
-        self.current = cur.next
-        return cur
-
-    def insert_end(self, value):
-        if(self.head == None):
-            self.head = Node(value)
-            self.tail = self.head
-        else:
-            tailN = Node(value)
-            self.tail.next = tailN
-            self.tail = tailN
-
-    def find(self, value):
-        for node in self:
-            if value == node.val:
-                return node
-
-        return None
-
-    def find_prev(self, value):
-        prev = None
-        for node in self:
-            if value == node.val:
-                return prev
-
-            prev = node
-
-
-#ll = SinglyLinkedSkipList("Test")
-
-#t1 = time.time()
-# for i in range(1, 1000):
-    #ll.insert(randint(1000000000, 9999999999))
-    #ll.insert(randint(-1000, 1000))
-    #print("After Insert, LL Is: {0}".format(ll))
-#t2 = time.time()
-#print("The Linked List is now:")
-# print(ll)
-
-#print("Insert Time For Skip List =", (t2-t1))
 
 
 class Application(pygubu.TkApplication):
@@ -147,14 +71,28 @@ class Application(pygubu.TkApplication):
         # Call destroy on toplevel to finish program
         self.toplevel.master.destroy()
 
-    def CreateList(self):
+    def CreateSlList(self):
         result = tk.simpledialog.askstring(
-            'Skip List Name', 'Enter Skip List Name', parent=None)
+            'Singly Linked Skip List Name', 'Enter Skip List Name', parent=None)
         if not result:
             self.appendMessage("No List was Created")
             return None
         try:
             self.CreateListNamed(result)
+            self.appendMessage(
+                "Successfully created skip list with name {}".format(result))
+        except ValueError:
+            self.appendMessage(
+                "Failed to create skip list {}, it already exists!".format(result))
+
+    def CreateDlList(self):
+        result = tk.simpledialog.askstring(
+            'Doubly Linked Skip List Name', 'Enter Skip List Name', parent=None)
+        if not result:
+            self.appendMessage("No List was Created")
+            return None
+        try:
+            self.CreateListNamed(result, "double")
             self.appendMessage(
                 "Successfully created skip list with name {}".format(result))
         except ValueError:
@@ -167,8 +105,11 @@ class Application(pygubu.TkApplication):
             logger.error(
                 "There is already a skip list with name: {0}".format(name))
         except KeyError:
-            logger.info("Created new Skip List")
-            self.lists[name] = SinglyLinkedSkipList(name)
+            logger.info("Created new Skip List of type {} linked".format(mode))
+            if "double" == mode:
+                self.lists[name] = DoublyLinkedSkipList(name)
+            else:
+                self.lists[name] = SinglyLinkedSkipList(name)
             return
         raise ValueError
 
@@ -223,7 +164,7 @@ class Application(pygubu.TkApplication):
         try:
             self.selected_list = self.lists[result]
             self.appendMessage("Skip List {} selected".format(result))
-            self.selected_skip_list['text'] = result
+            self.selected_skip_list['text'] = result + ", Type: " + self.selected_list.type
             self.setLabels()
         except KeyError:
             self.appendMessage("Skip List {} does not exist".format(result))
@@ -264,15 +205,26 @@ class Application(pygubu.TkApplication):
             return
         result = int(result)
 
+        t1 = time.time()
         self.selected_list.insert(result)
+        t2 = time.time()
         self.setLabels()
         if self.trace_mode:
             self.appendMessage("{}".format(self.selected_list))
+        self.appendMessage("Item {} inserted in {} seconds".format(result, (t2 - t1)))
 
     def ShowListDiag(self):
         diag = self.builder.get_object('showlist')
         name = self.builder.get_variable('list_name').get()
         from_val = self.builder.get_variable('from_node_val').get()
+        show_all_levels = self.builder.get_variable('show_all_levels').get()
+        logger.debug("Show All Levels has been set to {}".format(show_all_levels))
+
+        if show_all_levels:
+            logger.debug("Show All Levels has been set, returning the full list")
+            self.appendMessage("{}".format(self.selected_list))
+            diag.close()
+
         try:
             from_val = int(from_val)
         except:
@@ -382,7 +334,8 @@ class Application(pygubu.TkApplication):
             keys = []
             i = 0
             while i < numKeys:
-                keys.append(randint(1000000000, 9999999999))
+                #keys.append(randint(1000000000, 9999999999))
+                keys.append(randint(10, 99))
                 i += 1
 
             writer.writerow(keys)
@@ -395,6 +348,104 @@ class Application(pygubu.TkApplication):
         dialog = self.builder.get_object('createdatadiag')
         dialog.close()
 
+    def DeleteNode(self):
+        if not self.selected_list:
+            self.appendMessage("You need to select a skip list first")
+            return
+
+        result = tk.simpledialog.askinteger(
+            'Delete Node in Skip List', 'Enter Integer Value', parent=None)
+
+        if not result:
+            self.appendMessage("No item was deleted")
+            return
+        result = int(result)
+
+        t1 = time.time()
+        deleted = self.selected_list.delete(result):
+        t2 = time.time()
+        if deleted:
+            self.appendMessage("Deleted item {} from Skip List {} in {} seconds".format(
+                result, self.selected_list.name, (t2 - t1)))
+            self.setLabels()
+            if self.trace_mode:
+                self.appendMessage("{}".format(self.selected_list))
+        else:
+            self.appendMessage("Item {} was not found in the skip list {}".format(
+                result, self.selected_list.name))
+
+    def FindNode(self):
+        if not self.selected_list:
+            self.appendMessage("You need to select a skip list first")
+            return
+
+        result = tk.simpledialog.askinteger(
+            'Find Node in Skip List', 'Enter Integer Value', parent=None)
+
+        if not result:
+            self.appendMessage("No item was added")
+            return
+        result = int(result)
+
+        t1 = time.time()
+        node = self.selected_list.find(result)
+        t2 = time.time()
+        if not node:
+            self.appendMessage("Item {} was not found Skip List {}".format(
+                result, self.selected_list.name))
+        else:
+            self.appendMessage("Item {} was found in the skip list {}, Previous Node: {}, Next Node: {}".format(
+                result, self.selected_list.name, node.prev, node.next, node.up, node.down))
+        self.appendMessage("Find Node Completed in {} seconds".format((t2 - t1)))
+
+    def DeleteFromFile(self):
+        if not self.selected_list:
+            self.appendMessage("You need to select a Skip List first")
+            return
+        filename = filedialog.askopenfilename(
+            initialdir=".", title="Select File to read from")
+        if not filename:
+            self.appendMessage("No values read")
+            return
+        elif ".csv" not in filename:
+            self.appendMessage("Only CSV files are allowed")
+            return
+
+        f = open(filename, "r")
+        reader = csv.reader(f, delimiter=",")
+        keys = []
+
+        logger.info("Reading all integers from file {0}".format(filename))
+        for key in reader:
+            keys.append(key)
+
+        if not keys or len(keys) <= 0:
+            self.appendMessage("No Keys found in the file")
+            return
+
+        keys = keys[0]
+
+        logger.info("Found {0} keys in file {1}".format(len(keys), filename))
+        logger.debug("Keys: {}".format(keys))
+
+        t1 = time.time()
+        for key in keys:
+            try:
+                key = int(key)
+                deleted = self.selected_list.delete(int(key))
+                if self.trace_mode:
+                    if deleted:
+                        self.appendMessage(
+                            "Deleted Key {}, the list is now {}".format(key, self.selected_list))
+                    else:
+                        self.appendMessage("Key {} was not found in the list".format(key))
+            except:
+                logger.error(
+                    "Found invalid key {} in file, skipping it".format(key))
+        self.setLabels()
+        t2 = time.time()
+        self.appendMessage(
+            "Total time to delete {} keys: {} seconds".format(len(keys), (t2 - t1)))
 
 if __name__ == '__main__':
     parser = ArgumentParser()
